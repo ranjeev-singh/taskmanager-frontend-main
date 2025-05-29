@@ -10,6 +10,7 @@ import UserList from './components/UserList';
 import SignOut from './components/SignOut';
 import TaskList from './components/TaskList';
 import UserDetails from './components/UserDetails';
+import Subscription from './components/Subscription';
 import { ActionCableProvider } from './utils/ActionCableContext';
 
 function AppContent() {
@@ -95,6 +96,10 @@ function AppContent() {
                     <UserList />
                   </ProtectedRoute>
                 }
+              />
+              <Route
+                path="/subscription"
+                element={token ? <Subscription userId={userId} /> : <Navigate to="/login" />}
               />
               <Route
                 path="/tasks"

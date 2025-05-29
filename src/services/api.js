@@ -50,4 +50,9 @@ export const deleteTask = async (taskId) => {
   return api.delete(`/api/v1/tasks/${taskId}`);
 };
 
+export const createSubscription = (subscription) =>
+  api.post('/api/v1/subscriptions', { subscription });
+
+export const cancelSubscription = () => api.post('/api/v1/subscriptions/cancel_subscription');
+
 export default api;
