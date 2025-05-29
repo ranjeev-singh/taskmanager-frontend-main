@@ -55,4 +55,6 @@ export const createSubscription = (subscription) =>
 
 export const cancelSubscription = () => api.post('/api/v1/subscriptions/cancel_subscription');
 
+export const getSubscriptions = () => api.get('/api/v1/subscriptions');
+
 export default api;
