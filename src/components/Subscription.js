@@ -1,55 +1,42 @@
-import React, { useState } from 'react';
-import { createSubscription, cancelSubscription } from '../services/api';
+import React, { useState, useEffect } from 'react';
+import SubscriptionForm from './SubscriptionForm';
+import SubscriptionList from './SubscriptionList';
+import { getSubscriptions } from '../services/api';
 
 const Subscription = ({ userId }) => {
-  const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState('usd');
-  const [remarks, setRemarks] = useState('');
+  const [subscriptions, setSubscriptions] = useState([]);
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
-    try {
-      await createSubscription({ user_id: userId, amount, currency, remarks });
-      alert('Subscription created');
-    } catch (error) {
-      alert('Error creating subscription');
-    }
+  useEffect(() => {
+    const fetchSubscriptions = async () => {
+      try {
+        const response = await getSubscriptions();
+        setSubscriptions(response.data);
+      } catch (error) {
+        console.error('Error fetching subscriptions:', error);
+      }
+    };
+    fetchSubscriptions();
+  }, []);
+
+  const handleSubscriptionCreated = (subscription) => {
+    setSubscriptions([...subscriptions, subscription]);
   };
 
-  const handleCancel = async () => {
-    try {
-      await cancelSubscription();
-      alert('Subscription canceled');
-    } catch (error) {
-      alert('Error canceling subscription');
-    }
+  const handleSubscriptionCanceled = (subscriptionId) => {
+    setSubscriptions(
+      subscriptions.map((sub) =>
+        sub.id === subscriptionId ? { ...sub, status: 'canceled' } : sub
+      )
+    );
   };
 
   return (
     <div>
-      <h2>Manage Subscription</h2>
-      <form onSubmit={handleCreate}>
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="Amount"
-          required
-        />
-        <input
-          type="text"
-          value={currency}
-          onChange={(e) => setCurrency(e.target.value)}
-          placeholder="Currency"
-        />
-        <textarea
-          value={remarks}
-          onChange={(e) => setRemarks(e.target.value)}
-          placeholder="Remarks"
-        />
-        <button type="submit">Create Subscription</button>
-      </form>
-      <button onClick={handleCancel}>Cancel Subscription</button>
+      <SubscriptionForm userId={userId} onSubscriptionCreated={handleSubscriptionCreated} />
+      <SubscriptionList
+        subscriptions={subscriptions}
+        onSubscriptionCanceled={handleSubscriptionCanceled}
+      />
     </div>
   );
 };
